@@ -11,4 +11,4 @@ numpy=1.9.2=py27_0
 pandas=0.16.2=np19py27_0
 requests=2.7.0=py27_0
 scipy=0.16.0=np19py27_0
-gunicorn=19.1.0-py27_0
+gunicorn=19.1.0=py27_0
