@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv='content-type' content='text/html; charset=utf-8' />
+
+    <title>Stock Ticker Plot</title>
+
+    {{ plot_resources|indent(4)|safe }}
+
+    {{ plot_script|indent(4)|safe }}
+
+  </head>
+  <body>
+  	<font face ='Helvetica'>
+    <! Simple stock plotter>
+    <p><font size="8">Stock Ticker Plot</font></p>
+    <p><font size="6">Enter a stock ticker to see a daily candle plot for the last month. </font></p>
+    <form name="ticker_button" method='GET'>
+        Symbol:
+        <input type="text" name="ticker" value="{{ ticker }}">
+        <button type="submit">Submit</button>
+    </form>
+    {{ plot_div|indent(4)|safe }}
+    <p>Data provided by <a href="https://www.quandl.com/data/WIKI">Quandl</a></p>
+	</font>
+  </body>
+</html>
