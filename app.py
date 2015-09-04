@@ -16,10 +16,6 @@ from bokeh.resources import INLINE
 from bokeh.templates import RESOURCES
 from bokeh.util.string import encode_utf8
 
-
-
-
-
 app = flask.Flask(__name__)
 
 def getitem(obj, item, default):
@@ -27,7 +23,6 @@ def getitem(obj, item, default):
         return default
     else:
         return obj[item]
-
 
 @app.route("/")
 def stock_plot():
@@ -38,8 +33,6 @@ def stock_plot():
 
     # Set default for ticker
 	ticker = getitem(args, 'ticker', 'TWTR')
-
-
 	url = 'https://www.quandl.com/api/v1/datasets/WIKI/' + ticker + '.json'
 	r = requests.get(url)
 	if(type(r.json().get('error')) == unicode):
@@ -53,28 +46,37 @@ def stock_plot():
 		ticker_company_name = r.json().get('name')
 		ticker_company_name = \
 			ticker_company_name[0:(ticker_company_name.find(')'))+1]
-
+		# gather column names
 		ticker_columns = r.json().get('column_names')
+		# and chuck everything into a DataFrame
 		temp_df = pd.DataFrame(ticker_data,columns=ticker_columns)
+		# then pare down for the DataFrame we'll use
 		df = temp_df[['Date','Open', 'Close', 'Low', 'High']]
 		df.columns = ['date','open', 'close', 'low', 'high']
 		df["date"] = pd.to_datetime(df["date"])
 		df.index = df.date
-		lastdate = df['date'][0] # find the last day in the data
-		firstdate = lastdate - pd.DateOffset(months=1) # one month back from that
-		df = df[lastdate:firstdate] # grab the last month
-		# candle plot taken from
+		
+		# various gyrations to grab the last month worth of data
+		# find the last day in the data
+		lastdate = df['date'][0]
+		# set the first date to one month back from the last date
+		firstdate = lastdate - pd.DateOffset(months=1)
+		# then grab the last month worth of data
+		df = df[lastdate:firstdate] 
+		
+		# calculations associated with generating candlesticks, taken from:
 		# http://bokeh.pydata.org/en/latest/docs/gallery/candlestick.html
 		mids = (df.open + df.close)/2
 		spans = abs(df.close-df.open)
 		inc = df.close > df.open
 		dec = df.open > df.close
-		w = 24*60*60*1000 # day in ms
+		# set candlestick duration (in ms)
+		w = 24*60*60*1000 
+		
+		# configure plot
 		TOOLS = "pan,wheel_zoom,box_zoom,reset,save"
-
 		p = figure(title=ticker + " Daily Candles", x_axis_type="datetime", \
 			tools=TOOLS, plot_width=1000, toolbar_location="left")
-
 		p.segment(df.date, df.high, df.date, df.low, color="black")
 		p.rect(df.date[inc], mids[inc], w, spans[inc], fill_color="#abdb8d", \
 			line_color="black")
@@ -107,6 +109,7 @@ def stock_plot():
 		return encode_utf8(html)
     
 if __name__ == "__main__":
-	# taken verbatim from http://virantha.com/2013/11/14/starting-a-simple-flask-app-with-heroku/
+	# taken verbatim from:
+	# http://virantha.com/2013/11/14/starting-a-simple-flask-app-with-heroku/
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
