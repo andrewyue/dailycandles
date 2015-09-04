@@ -4,7 +4,7 @@
     <meta charset='utf-8' />
     <meta http-equiv='content-type' content='text/html; charset=utf-8' />
 
-    <title>Stock Ticker Plot</title>
+    <title>Daily Candlestick Chart for {{ ticker }}</title>
 
     {{ plot_resources|indent(4)|safe }}
 
@@ -14,8 +14,8 @@
   <body>
   	<font face ='Helvetica'>
     <! Simple stock plotter>
-    <p><font size="8">Stock Ticker Plot</font></p>
-    <p><font size="6">Enter a stock ticker to see a daily candle plot for the last month. </font></p>
+    <p><font size="8">Daily Candlestick Chart Generator</font></p>
+    <p><font size="6">Enter a stock ticker to see its daily candlestick chart for the last month. </font></p>
     <form name="ticker_button" method='GET'>
         Symbol:
         <input type="text" name="ticker" value="{{ ticker }}">
